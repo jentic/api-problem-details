@@ -1,3 +1,5 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://raw.githubusercontent.com/jentic/api-problem-details/refs/heads/main/schemas/problem-details.yaml"
 description: Jentic Problem Details error schema (RFC 9457)
 type: object
 required:
@@ -36,7 +38,7 @@ properties:
     example: The request body is missing required field 'name'.
   instance:
     type: string
-    format: uri
+    format: uri-reference
     description: >-
       A URI reference identifying the specific occurrence of the problem.
       Typically the request path.
@@ -56,4 +58,4 @@ properties:
       or field-level problems need to be surfaced in a single response.
     maxItems: 1000
     items:
-      $ref: '#/components/schemas/ErrorItem'
+      $ref: "./error-item.yaml"
