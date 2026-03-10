@@ -13,13 +13,23 @@ Reference components directly from your OpenAPI description:
 ```yaml
 responses:
   '400':
-    $ref: 'https://raw.githubusercontent.com/jentic/jentic-api-problem-details/main/openapi-domain.yaml#/components/responses/BadRequest'
+    $ref: 'https://raw.githubusercontent.com/jentic/api-problem-details/refs/heads/main/responses/400-bad-request.yaml'
   '401':
-    $ref: 'https://raw.githubusercontent.com/jentic/jentic-api-problem-details/main/openapi-domain.yaml#/components/responses/Unauthorized'
+    $ref: 'https://raw.githubusercontent.com/jentic/api-problem-details/refs/heads/main/responses/401-unauthorized.yaml'
+  '403':
+    $ref: 'https://raw.githubusercontent.com/jentic/api-problem-details/refs/heads/main/responses/403-forbidden.yaml'
+  '404':
+    $ref: 'https://raw.githubusercontent.com/jentic/api-problem-details/refs/heads/main/responses/404-not-found.yaml'
+  '409':
+    $ref: 'https://raw.githubusercontent.com/jentic/api-problem-details/refs/heads/main/responses/409-conflict.yaml'
   '422':
-    $ref: 'https://raw.githubusercontent.com/jentic/jentic-api-problem-details/main/openapi-domain.yaml#/components/responses/ValidationError'
+    $ref: 'https://raw.githubusercontent.com/jentic/api-problem-details/refs/heads/main/responses/422-validation-error.yaml'
+  '429':
+    $ref: 'https://raw.githubusercontent.com/jentic/api-problem-details/refs/heads/main/responses/429-too-many-requests.yaml'
   '500':
-    $ref: 'https://raw.githubusercontent.com/jentic/jentic-api-problem-details/main/openapi-domain.yaml#/components/responses/ServerError'
+    $ref: 'https://raw.githubusercontent.com/jentic/api-problem-details/refs/heads/main/responses/500-server-error.yaml'
+  '503':
+    $ref: 'https://raw.githubusercontent.com/jentic/api-problem-details/refs/heads/main/responses/503-service-unavailable.yaml'
 ```
 
 ## Problem Types
