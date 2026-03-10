@@ -1,0 +1,25 @@
+description: >-
+  403 Forbidden — The client is authenticated but does not have permission
+  to perform this action on this resource. Unlike 401, re-authenticating
+  will not change the outcome.
+content:
+  application/problem+json:
+    schema:
+      $ref: '../openapi-domain.yaml#/components/schemas/ProblemDetails'
+    examples:
+      insufficientPermissions:
+        summary: Authenticated but not authorised for this action
+        value:
+          type: about:blank
+          status: 403
+          title: Forbidden
+          detail: You do not have permission to delete this capability set.
+          instance: /v2/capability-sets/abc123
+      readOnlyAccess:
+        summary: Read-only credential attempting a write operation
+        value:
+          type: about:blank
+          status: 403
+          title: Forbidden
+          detail: This API key has read-only access and cannot perform write operations.
+          instance: /v2/catalog/ingest

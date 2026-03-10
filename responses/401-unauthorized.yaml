@@ -1,0 +1,33 @@
+description: >-
+  401 Unauthorized — Authentication is required and has not been provided,
+  or the provided credentials are invalid. The client SHOULD retry with
+  valid credentials.
+headers:
+  WWW-Authenticate:
+    description: >-
+      Indicates the authentication scheme required. MUST be present on
+      401 responses per RFC 9110.
+    schema:
+      type: string
+    example: Bearer
+content:
+  application/problem+json:
+    schema:
+      $ref: '../openapi-domain.yaml#/components/schemas/ProblemDetails'
+    examples:
+      missingToken:
+        summary: No authentication provided
+        value:
+          type: about:blank
+          status: 401
+          title: Unauthorized
+          detail: A valid Bearer token or API key is required to access this resource.
+          instance: /v2/capability-sets
+      invalidToken:
+        summary: Token present but invalid or expired
+        value:
+          type: about:blank
+          status: 401
+          title: Unauthorized
+          detail: The provided token is invalid or has expired. Please re-authenticate.
+          instance: /v2/sessions

@@ -1,0 +1,25 @@
+description: >-
+  409 Conflict — The request conflicts with the current state of the resource.
+  Typical causes: duplicate creation, concurrent modification, or referential
+  integrity violation.
+content:
+  application/problem+json:
+    schema:
+      $ref: '../openapi-domain.yaml#/components/schemas/ProblemDetails'
+    examples:
+      duplicateResource:
+        summary: Resource already exists
+        value:
+          type: about:blank
+          status: 409
+          title: Conflict
+          detail: A capability set named 'my-agent' already exists for this account.
+          instance: /v2/capability-sets
+      concurrentModification:
+        summary: Resource modified by another request
+        value:
+          type: about:blank
+          status: 409
+          title: Conflict
+          detail: The resource was modified by another request. Retrieve the latest version and retry.
+          instance: /v2/capability-sets/abc123

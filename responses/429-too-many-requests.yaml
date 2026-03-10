@@ -1,0 +1,42 @@
+description: >-
+  429 Too Many Requests — The client has exceeded the rate limit for this
+  resource or account. Retry after the duration indicated in Retry-After.
+headers:
+  Retry-After:
+    description: Number of seconds to wait before retrying.
+    schema:
+      type: string
+    example: '30'
+  X-RateLimit-Limit:
+    description: The maximum number of requests allowed in the current window.
+    schema:
+      type: integer
+      format: int32
+    example: 1000
+  X-RateLimit-Remaining:
+    description: The number of requests remaining in the current window.
+    schema:
+      type: integer
+      format: int32
+    example: 0
+content:
+  application/problem+json:
+    schema:
+      $ref: '../openapi-domain.yaml#/components/schemas/ProblemDetails'
+    examples:
+      rateLimitExceeded:
+        summary: Account-level rate limit exceeded
+        value:
+          type: about:blank
+          status: 429
+          title: Too Many Requests
+          detail: Rate limit exceeded. You may retry after 30 seconds.
+          instance: /v2/discovery/apis/search
+      burstLimitExceeded:
+        summary: Short-window burst limit exceeded
+        value:
+          type: about:blank
+          status: 429
+          title: Too Many Requests
+          detail: Burst limit exceeded. Slow down requests and retry after 5 seconds.
+          instance: /v2/executions

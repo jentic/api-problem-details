@@ -1,0 +1,30 @@
+description: >-
+  422 Unprocessable Content — The request is syntactically valid but fails
+  semantic validation or business rule checks. Use the errors[] array to
+  surface all per-field violations in a single response.
+content:
+  application/problem+json:
+    schema:
+      $ref: '../openapi-domain.yaml#/components/schemas/ProblemDetails'
+    examples:
+      fieldValidationErrors:
+        summary: Multiple field-level validation failures
+        value:
+          type: about:blank
+          status: 422
+          title: Unprocessable Content
+          detail: The request failed validation. See errors for details.
+          instance: /v2/capability-sets
+          errors:
+            - detail: "'name' must be between 1 and 255 characters."
+              pointer: '#/name'
+            - detail: "'description' exceeds the maximum length of 1024 characters."
+              pointer: '#/description'
+      businessRuleViolation:
+        summary: Business rule violation
+        value:
+          type: about:blank
+          status: 422
+          title: Unprocessable Content
+          detail: Cannot activate a sandbox that has no connected APIs.
+          instance: /v2/sandbox/abc123

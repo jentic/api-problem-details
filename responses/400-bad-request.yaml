@@ -1,0 +1,39 @@
+description: >-
+  400 Bad Request — The server cannot process the request due to a client
+  error (malformed syntax, invalid parameters, missing required fields).
+headers:
+  Deprecation:
+    description: Present if this operation is deprecated.
+    schema:
+      type: string
+  Sunset:
+    description: Present if a retirement date has been set.
+    schema:
+      type: string
+content:
+  application/problem+json:
+    schema:
+      $ref: '../openapi-domain.yaml#/components/schemas/ProblemDetails'
+    examples:
+      missingRequiredField:
+        summary: Missing required body field
+        value:
+          type: about:blank
+          status: 400
+          title: Bad Request
+          detail: The request body is missing one or more required fields.
+          instance: /v2/capability-sets
+          errors:
+            - detail: Field 'name' is required.
+              pointer: '#/name'
+      invalidParameterFormat:
+        summary: Invalid query parameter format
+        value:
+          type: about:blank
+          status: 400
+          title: Bad Request
+          detail: Query parameter 'limit' must be a positive integer.
+          instance: /v2/discovery/apis
+          errors:
+            - detail: "'limit' must be a positive integer between 1 and 100."
+              parameter: limit

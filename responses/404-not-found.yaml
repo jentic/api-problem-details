@@ -1,0 +1,24 @@
+description: >-
+  404 Not Found — The requested resource does not exist or is not accessible
+  to the authenticated principal.
+content:
+  application/problem+json:
+    schema:
+      $ref: '../openapi-domain.yaml#/components/schemas/ProblemDetails'
+    examples:
+      resourceNotFound:
+        summary: Resource with given id does not exist
+        value:
+          type: about:blank
+          status: 404
+          title: Not Found
+          detail: No capability set found with id 'abc123'.
+          instance: /v2/capability-sets/abc123
+      nestedResourceNotFound:
+        summary: Parent resource not found when accessing sub-resource
+        value:
+          type: about:blank
+          status: 404
+          title: Not Found
+          detail: No credential found with id 'xyz789'.
+          instance: /v2/credentials/xyz789/capability-sets

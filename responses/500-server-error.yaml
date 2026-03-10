@@ -1,0 +1,17 @@
+description: >-
+  500 Internal Server Error — An unexpected condition was encountered on the
+  server. The request may be retried. If the problem persists, contact support.
+  Do not expose internal implementation details in the detail field.
+content:
+  application/problem+json:
+    schema:
+      $ref: '../openapi-domain.yaml#/components/schemas/ProblemDetails'
+    examples:
+      unexpectedError:
+        summary: Unexpected server error
+        value:
+          type: about:blank
+          status: 500
+          title: Internal Server Error
+          detail: An unexpected error occurred. If this persists, contact support@jentic.com.
+          instance: /v2/executions

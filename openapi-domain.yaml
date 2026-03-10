@@ -1,0 +1,329 @@
+openapi: 3.2.0
+info:
+  title: Jentic Problem Details Domain
+  description: >-
+    Reusable RFC 9457 Problem Details components for all Jentic APIs.
+    Reference individual components via $ref to this file.
+  version: 1.0.0
+  contact:
+    name: Jentic Platform Team
+    url: https://jentic.com
+    email: platform@jentic.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+paths: {}
+
+components:
+  schemas:
+    ProblemDetails:
+      description: RFC 9457 Problem Details for HTTP APIs.
+      type: object
+      required:
+        - detail
+      properties:
+        type:
+          type: string
+          format: uri
+          description: >-
+            A URI reference identifying the problem type. When set to "about:blank",
+            the title SHOULD be the standard HTTP status phrase. Use an IANA-registered
+            type URI where one applies.
+          default: about:blank
+          maxLength: 1024
+          example: about:blank
+        status:
+          type: integer
+          format: int32
+          description: The HTTP status code for this occurrence of the problem.
+          minimum: 100
+          maximum: 599
+          example: 400
+        title:
+          type: string
+          description: >-
+            A short, human-readable summary of the problem type. Should not change
+            between occurrences except for localisation purposes.
+          maxLength: 1024
+          example: Bad Request
+        detail:
+          type: string
+          description: >-
+            A human-readable explanation specific to this occurrence of the problem.
+            Must be present. Provide actionable information where possible.
+          maxLength: 4096
+          example: The request body is missing required field 'name'.
+        instance:
+          type: string
+          format: uri
+          description: >-
+            A URI reference identifying the specific occurrence of the problem.
+            Typically the request path.
+          maxLength: 1024
+          example: /v2/capability-sets
+        code:
+          type: string
+          description: >-
+            An optional provider-specific code for internal error taxonomy
+            and observability correlation.
+          maxLength: 50
+          example: JENTIC-4001
+        errors:
+          type: array
+          description: >-
+            Granular error details. Use when multiple validation errors or
+            field-level problems need surfacing in a single response.
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+
+    ErrorItem:
+      description: A granular error detail entry within the errors[] array.
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: >-
+            A human-readable explanation of this specific error. Name the
+            field, parameter, or header involved where possible.
+          maxLength: 4096
+          example: Field 'name' must not be blank.
+        pointer:
+          type: string
+          description: >-
+            A JSON Pointer (RFC 6901) to the specific request body property
+            that is the source of this error.
+          maxLength: 1024
+          example: '#/name'
+        parameter:
+          type: string
+          description: The name of the query or path parameter that is the source of this error.
+          maxLength: 1024
+          example: limit
+        header:
+          type: string
+          description: The name of the request header that is the source of this error.
+          maxLength: 1024
+          example: Authorization
+        code:
+          type: string
+          description: An optional provider-specific code for this error.
+          maxLength: 50
+          example: JENTIC-V-001
+
+  responses:
+    BadRequest:
+      description: >-
+        400 Bad Request — The server cannot process the request due to a client
+        error (malformed syntax, invalid parameters, missing required fields).
+      headers:
+        Deprecation:
+          $ref: '#/components/headers/Deprecation'
+        Sunset:
+          $ref: '#/components/headers/Sunset'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            status: 400
+            title: Bad Request
+            detail: The request body is missing required field 'name'.
+            instance: /v2/capability-sets
+            errors:
+              - detail: Field 'name' is required.
+                pointer: '#/name'
+
+    Unauthorized:
+      description: >-
+        401 Unauthorized — Authentication is required and has not been provided
+        or is invalid. The client SHOULD repeat the request with suitable credentials.
+      headers:
+        WWW-Authenticate:
+          $ref: '#/components/headers/WWWAuthenticate'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            status: 401
+            title: Unauthorized
+            detail: A valid Bearer token or API key is required to access this resource.
+            instance: /v2/capability-sets
+
+    Forbidden:
+      description: >-
+        403 Forbidden — The client is authenticated but does not have permission
+        to perform this action on this resource.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            status: 403
+            title: Forbidden
+            detail: You do not have permission to delete this capability set.
+            instance: /v2/capability-sets/abc123
+
+    NotFound:
+      description: >-
+        404 Not Found — The requested resource does not exist or is not accessible
+        to the authenticated principal.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            status: 404
+            title: Not Found
+            detail: No capability set found with id 'abc123'.
+            instance: /v2/capability-sets/abc123
+
+    Conflict:
+      description: >-
+        409 Conflict — The request conflicts with the current state of the resource
+        (e.g. duplicate creation, optimistic lock violation).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            status: 409
+            title: Conflict
+            detail: A capability set with this name already exists.
+            instance: /v2/capability-sets
+
+    ValidationError:
+      description: >-
+        422 Unprocessable Content — The request is syntactically valid but
+        fails semantic validation or business rule checks. Use the errors[]
+        array to surface per-field violations.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            status: 422
+            title: Unprocessable Content
+            detail: The request failed validation.
+            instance: /v2/capability-sets
+            errors:
+              - detail: "'name' must be between 1 and 255 characters."
+                pointer: '#/name'
+              - detail: "'limit' must be a positive integer."
+                parameter: limit
+
+    TooManyRequests:
+      description: >-
+        429 Too Many Requests — The client has exceeded the rate limit.
+        Retry after the duration indicated in the Retry-After header.
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            status: 429
+            title: Too Many Requests
+            detail: Rate limit exceeded. You may retry after 30 seconds.
+            instance: /v2/discovery/apis/search
+
+    ServerError:
+      description: >-
+        500 Internal Server Error — An unexpected condition was encountered.
+        The request may be retried. If the problem persists, contact support.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            status: 500
+            title: Internal Server Error
+            detail: An unexpected error occurred. If this persists, contact support@jentic.com.
+            instance: /v2/executions
+
+    ServiceUnavailable:
+      description: >-
+        503 Service Unavailable — The server is temporarily unable to handle
+        the request. Retry after the duration indicated in the Retry-After header.
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          example:
+            type: about:blank
+            status: 503
+            title: Service Unavailable
+            detail: The service is temporarily unavailable. Please retry in a few minutes.
+            instance: /v2/executions
+
+  headers:
+    Deprecation:
+      description: >-
+        Indicates the API operation is deprecated. Value is an HTTP date
+        (RFC 7231) indicating when deprecation took effect, or the boolean
+        "true" if the date is not yet determined.
+        See: https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-deprecation-header
+      schema:
+        type: string
+      example: Tue, 11 Mar 2025 00:00:00 GMT
+
+    Sunset:
+      description: >-
+        Indicates the date after which the API operation will no longer be
+        available. Value is an HTTP date (RFC 7231).
+        See: https://www.rfc-editor.org/rfc/rfc8594
+      schema:
+        type: string
+        format: date-time
+      example: Tue, 11 Mar 2026 00:00:00 GMT
+
+    WWWAuthenticate:
+      description: >-
+        Indicates the authentication scheme(s) that can be used to access
+        the resource. MUST be present on 401 responses per RFC 9110.
+      schema:
+        type: string
+      example: Bearer
+
+    RetryAfter:
+      description: >-
+        The number of seconds to wait before making a new request, or an
+        HTTP date after which the request may be retried.
+      schema:
+        type: string
+      example: '30'
+
+    RateLimitLimit:
+      description: The maximum number of requests allowed in the current rate limit window.
+      schema:
+        type: integer
+        format: int32
+      example: 1000
+
+    RateLimitRemaining:
+      description: The number of requests remaining in the current rate limit window.
+      schema:
+        type: integer
+        format: int32
+      example: 842

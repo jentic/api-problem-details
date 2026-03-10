@@ -1,0 +1,31 @@
+description: >-
+  503 Service Unavailable — The server is temporarily unable to handle the
+  request due to maintenance or overload. Retry after the duration indicated
+  in Retry-After.
+headers:
+  Retry-After:
+    description: Number of seconds to wait, or an HTTP date after which to retry.
+    schema:
+      type: string
+    example: '60'
+content:
+  application/problem+json:
+    schema:
+      $ref: '../openapi-domain.yaml#/components/schemas/ProblemDetails'
+    examples:
+      maintenanceWindow:
+        summary: Planned maintenance
+        value:
+          type: about:blank
+          status: 503
+          title: Service Unavailable
+          detail: The service is undergoing scheduled maintenance. Please retry after 10 minutes.
+          instance: /v2/executions
+      temporaryOverload:
+        summary: Temporary capacity issue
+        value:
+          type: about:blank
+          status: 503
+          title: Service Unavailable
+          detail: The service is temporarily unavailable due to high demand. Please retry shortly.
+          instance: /v2/discovery/apis/search
