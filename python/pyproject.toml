@@ -1,0 +1,56 @@
+[project]
+name = "jentic-problem-details"
+version = "1.0.0"
+description = "RFC 9457 Problem Details models for Jentic APIs"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Jentic", email = "hello@jentic.com"}
+]
+keywords = ["rfc9457", "problem-details", "fastapi", "pydantic", "openapi"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: FastAPI",
+    "Framework :: Pydantic",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "pydantic>=2.9.0",
+]
+
+[project.optional-dependencies]
+fastapi = [
+    "fastapi>=0.100.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "fastapi>=0.100.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/jentic/api-problem-details"
+Repository = "https://github.com/jentic/api-problem-details"
+Documentation = "https://github.com/jentic/api-problem-details#readme"
+Issues = "https://github.com/jentic/api-problem-details/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/jentic"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

@@ -1,0 +1,25 @@
+Jentic API Problem Details
+Copyright 2025 Jentic
+
+This product includes software developed at Jentic (https://jentic.com/).
+
+This software implements RFC 9457 "Problem Details for HTTP APIs"
+as specified by the Internet Engineering Task Force (IETF).
+See: https://www.rfc-editor.org/rfc/rfc9457.html
+
+--------------------------------------------------------------------------------
+
+The following third-party dependencies are used by the Python package:
+
+- Pydantic (MIT License)
+  Copyright (c) 2017 Samuel Colvin
+  https://github.com/pydantic/pydantic
+
+- FastAPI (MIT License) [optional]
+  Copyright (c) 2018 Sebastián Ramírez
+  https://github.com/tiangolo/fastapi
+
+--------------------------------------------------------------------------------
+
+The TypeScript package has no runtime dependencies.
+Development dependencies are listed in typescript/package.json.
