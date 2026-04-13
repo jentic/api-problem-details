@@ -49,12 +49,21 @@ export class ProblemDetailError extends Error {
 		const contentType = response.headers.get('content-type') || '';
 
 		if (contentType.includes('application/problem+json')) {
-			const problemDetail = (await response.json()) as ProblemDetail;
-			return new ProblemDetailError(problemDetail);
+			try {
+				const problemDetail = (await response.json()) as ProblemDetail;
+				return new ProblemDetailError(problemDetail);
+			} catch {
+				// Fall through to text-based fallback if JSON parsing fails
+			}
 		}
 
-		// Fallback for non-problem+json error responses
-		const text = await response.text();
+		// Fallback for non-problem+json error responses or malformed JSON
+		let text: string;
+		try {
+			text = await response.text();
+		} catch {
+			text = '';
+		}
 		return new ProblemDetailError({
 			status: response.status,
 			title: response.statusText,
