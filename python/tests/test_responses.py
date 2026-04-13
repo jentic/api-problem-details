@@ -104,7 +104,7 @@ def test_validation_error():
     exc = ValidationError(detail="Invalid input format")
 
     assert exc.status_code == 422
-    assert exc.detail["title"] == "Validation Error"
+    assert exc.detail["title"] == "Unprocessable Content"
 
 
 def test_too_many_requests():

@@ -115,7 +115,7 @@ def test_problem_detail_multiple_errors():
     """Test ProblemDetail with multiple validation errors."""
     problem = ProblemDetail(
         status=422,
-        title="Validation Error",
+        title="Unprocessable Content",
         detail="Multiple validation errors occurred",
         instance="/api/resources",
         errors=[

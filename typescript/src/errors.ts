@@ -148,7 +148,7 @@ export const createProblemDetail = {
 		return {
 			type: 'about:blank',
 			status: 422,
-			title: 'Validation Error',
+			title: 'Unprocessable Content',
 			detail,
 			...options,
 		};

@@ -142,7 +142,7 @@ describe('createProblemDetail', () => {
 		const problem = createProblemDetail.validationError('Invalid input format');
 
 		expect(problem.status).toBe(422);
-		expect(problem.title).toBe('Validation Error');
+		expect(problem.title).toBe('Unprocessable Content');
 		expect(problem.detail).toBe('Invalid input format');
 	});
 

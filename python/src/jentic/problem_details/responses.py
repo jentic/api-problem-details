@@ -96,7 +96,7 @@ class ValidationError(ProblemDetailException):
     """422 Unprocessable Content — request is well-formed but contains semantic errors."""
 
     def __init__(self, detail: str, **kwargs):
-        super().__init__(422, detail, title=kwargs.pop("title", "Validation Error"), **kwargs)
+        super().__init__(422, detail, title=kwargs.pop("title", "Unprocessable Content"), **kwargs)
 
 
 class TooManyRequests(ProblemDetailException):
