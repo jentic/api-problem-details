@@ -6,6 +6,7 @@
 import { readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import { parse } from 'yaml';
 import { describe, it, expect } from 'vitest';
 import type { ProblemDetail, ErrorItem } from '../src/types';
 
@@ -14,53 +15,8 @@ const __dirname = dirname(__filename);
 
 function loadSchema(name: string): any {
 	const schemaPath = resolve(__dirname, '../../schemas', `${name}.yaml`);
-	const yaml = readFileSync(schemaPath, 'utf-8');
-	// Simple YAML parser for our schema files (we could use js-yaml but trying to avoid dependencies)
-	// Since we're just testing, we'll convert the schema files to JSON in the test setup
-	// For now, let's just parse the essential parts manually
-	return parseYamlSchema(yaml);
-}
-
-// Minimal YAML parser for our schema structure
-function parseYamlSchema(yaml: string): any {
-	const lines = yaml.split('\n');
-	const schema: any = { properties: {}, required: [] };
-
-	let currentProp: string | null = null;
-	let inProperties = false;
-
-	for (const line of lines) {
-		if (line.includes('required:')) {
-			inProperties = false;
-		} else if (line.includes('properties:')) {
-			inProperties = true;
-		} else if (inProperties && line.match(/^  (\w+):/)) {
-			const match = line.match(/^  (\w+):/);
-			if (match) {
-				currentProp = match[1];
-				schema.properties[currentProp] = {};
-			}
-		} else if (currentProp && line.includes('maxLength:')) {
-			const value = parseInt(line.split(':')[1].trim());
-			schema.properties[currentProp].maxLength = value;
-		} else if (currentProp && line.includes('minimum:')) {
-			const value = parseInt(line.split(':')[1].trim());
-			schema.properties[currentProp].minimum = value;
-		} else if (currentProp && line.includes('maximum:')) {
-			const value = parseInt(line.split(':')[1].trim());
-			schema.properties[currentProp].maximum = value;
-		} else if (currentProp && line.includes('maxItems:')) {
-			const value = parseInt(line.split(':')[1].trim());
-			schema.properties[currentProp].maxItems = value;
-		} else if (line.match(/^  - (\w+)$/)) {
-			const match = line.match(/^  - (\w+)$/);
-			if (match) {
-				schema.required.push(match[1]);
-			}
-		}
-	}
-
-	return schema;
+	const content = readFileSync(schemaPath, 'utf-8');
+	return parse(content);
 }
 
 describe('Schema Conformance', () => {
