@@ -4,12 +4,13 @@
  */
 
 import { readFileSync } from 'fs';
-import { resolve } from 'path';
-import Ajv from 'ajv';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { describe, it, expect } from 'vitest';
 import type { ProblemDetail, ErrorItem } from '../src/types';
 
-const ajv = new Ajv({ strict: false });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 function loadSchema(name: string): any {
 	const schemaPath = resolve(__dirname, '../../schemas', `${name}.yaml`);
