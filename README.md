@@ -51,7 +51,7 @@ pip install jentic-problem-details
 Use in your FastAPI application:
 
 ```python
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from jentic.problem_details import (
     BadRequest,
     NotFound,
