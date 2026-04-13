@@ -24,35 +24,42 @@ FastAPI integration:
 __version__ = "1.0.0"
 
 from .models import ErrorItem, ProblemDetail
-from .responses import (
-    BadRequest,
-    Conflict,
-    Forbidden,
-    NotFound,
-    ProblemDetailException,
-    ServerError,
-    ServiceUnavailable,
-    TooManyRequests,
-    Unauthorized,
-    ValidationError,
-    problem_detail_exception_handler,
-)
 
 __all__ = [
     # Models
     "ProblemDetail",
     "ErrorItem",
-    # Exceptions
-    "ProblemDetailException",
-    "BadRequest",
-    "Unauthorized",
-    "Forbidden",
-    "NotFound",
-    "Conflict",
-    "ValidationError",
-    "TooManyRequests",
-    "ServerError",
-    "ServiceUnavailable",
-    # Utilities
-    "problem_detail_exception_handler",
 ]
+
+try:
+    from .responses import (
+        BadRequest,
+        Conflict,
+        Forbidden,
+        NotFound,
+        ProblemDetailException,
+        ServerError,
+        ServiceUnavailable,
+        TooManyRequests,
+        Unauthorized,
+        ValidationError,
+        problem_detail_exception_handler,
+    )
+except ImportError:
+    pass
+else:
+    __all__ += [
+        # Exceptions
+        "ProblemDetailException",
+        "BadRequest",
+        "Unauthorized",
+        "Forbidden",
+        "NotFound",
+        "Conflict",
+        "ValidationError",
+        "TooManyRequests",
+        "ServerError",
+        "ServiceUnavailable",
+        # Utilities
+        "problem_detail_exception_handler",
+    ]
