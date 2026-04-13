@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "RFC 9457 Problem Details models for Jentic APIs"
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
+license = {text = "Apache-2.0"}
 authors = [
     {name = "Jentic", email = "hello@jentic.com"}
 ]
@@ -12,7 +12,7 @@ keywords = ["rfc9457", "problem-details", "fastapi", "pydantic", "openapi"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",

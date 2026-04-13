@@ -271,4 +271,6 @@ npm run test:coverage
 
 ## License
 
-Apache-2.0
+@jentic/problem-details is licensed under [Apache 2.0 license](https://github.com/jentic/api-problem-details/blob/main/LICENSE).
+@jentic/problem-details comes with an explicit [NOTICE](https://github.com/jentic/api-problem-details/blob/main/NOTICE) file
+containing additional legal notices and information.
