@@ -21,7 +21,9 @@ FastAPI integration:
     app.add_exception_handler(ProblemDetailException, problem_detail_exception_handler)
 """
 
-__version__ = "1.0.0"
+from importlib.metadata import version as _pkg_version
+
+__version__ = _pkg_version("jentic-problem-details")
 
 from .models import ErrorItem, ProblemDetail
 
