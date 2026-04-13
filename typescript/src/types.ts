@@ -124,24 +124,34 @@ export interface ErrorItem {
 
 /**
  * Type guard to check if an object is a ProblemDetail.
+ *
+ * Distinguishes from ErrorItem by checking for the presence of
+ * `status` or `title`, which are specific to ProblemDetail.
  */
 export function isProblemDetail(obj: unknown): obj is ProblemDetail {
+	if (typeof obj !== 'object' || obj === null) return false;
+	const record = obj as Record<string, unknown>;
 	return (
-		typeof obj === 'object' &&
-		obj !== null &&
-		'detail' in obj &&
-		typeof (obj as ProblemDetail).detail === 'string'
+		typeof record.detail === 'string' &&
+		('status' in record || 'title' in record)
 	);
 }
 
 /**
  * Type guard to check if an object is an ErrorItem.
+ *
+ * Distinguishes from ProblemDetail by checking for the presence of
+ * `pointer`, `parameter`, or `header`, which are specific to ErrorItem.
+ * Falls back to a minimal check (has `detail`, lacks ProblemDetail-specific fields).
  */
 export function isErrorItem(obj: unknown): obj is ErrorItem {
+	if (typeof obj !== 'object' || obj === null) return false;
+	const record = obj as Record<string, unknown>;
+	if (typeof record.detail !== 'string') return false;
 	return (
-		typeof obj === 'object' &&
-		obj !== null &&
-		'detail' in obj &&
-		typeof (obj as ErrorItem).detail === 'string'
+		'pointer' in record ||
+		'parameter' in record ||
+		'header' in record ||
+		!('status' in record || 'title' in record)
 	);
 }
