@@ -4,7 +4,7 @@ These Pydantic models mirror the OpenAPI schemas in the parent repository.
 """
 from typing import Annotated
 
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field
 
 
 class ErrorItem(BaseModel):
