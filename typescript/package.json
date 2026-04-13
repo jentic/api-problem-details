@@ -1,0 +1,55 @@
+{
+  "name": "@jentic/problem-details",
+  "version": "1.0.0",
+  "description": "RFC 9457 Problem Details types for Jentic APIs",
+  "license": "Apache-2.0",
+  "author": "Jentic <hello@jentic.com>",
+  "homepage": "https://github.com/jentic/api-problem-details#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jentic/api-problem-details.git",
+    "directory": "typescript"
+  },
+  "bugs": {
+    "url": "https://github.com/jentic/api-problem-details/issues"
+  },
+  "keywords": [
+    "rfc9457",
+    "problem-details",
+    "typescript",
+    "error-handling",
+    "http",
+    "api"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.0.0",
+    "yaml": "^2.8.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
