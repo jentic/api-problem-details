@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "author": "Jentic <hello@jentic.com>",
   "homepage": "https://github.com/jentic/api-problem-details#readme",
-    "publishConfig": {
+  "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org",
     "provenance": true
