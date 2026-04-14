@@ -2,39 +2,94 @@ name: Release
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to release (e.g., 1.0.0)'
-        required: true
-        type: string
 
 concurrency: release
 
 jobs:
+  test-python:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        working-directory: python
+        run: uv pip install --system -e ".[dev]"
+
+      - name: Run tests
+        working-directory: python
+        run: pytest tests/ -v --cov=jentic.problem_details --cov-report=term-missing
+
+  test-typescript:
+    name: TypeScript
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: typescript/package-lock.json
+
+      - name: Install dependencies
+        working-directory: typescript
+        run: npm ci
+
+      - name: Build
+        working-directory: typescript
+        run: npm run build
+
+      - name: Run tests
+        working-directory: typescript
+        run: npm test
+
+      - name: Type check
+        working-directory: typescript
+        run: npm run typecheck
+
   release:
     name: Release packages
+    needs: [test-python, test-typescript]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     environment:
-      name: npm-release
-      url: https://www.npmjs.com/org/jentic
+      name: release
+      url: https://github.com/jentic/api-problem-details/releases
     permissions:
       contents: write
-      id-token: write  # Required for PyPI OIDC and NPM provenance
+      issues: write
+      pull-requests: write
+      id-token: write
+      attestations: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -42,91 +97,44 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Install semantic-release
+        run: >
+          npm install -g
+          semantic-release
+          @semantic-release/commit-analyzer
+          @semantic-release/release-notes-generator
+          @semantic-release/github
+          @semantic-release/npm
+          @semantic-release/exec
+          @semantic-release/git
 
-      - name: Update Python package version
-        working-directory: python
-        run: |
-          sed -i 's/^version = .*/version = "${{ inputs.version }}"/' pyproject.toml
-
-      - name: Update TypeScript package version
-        working-directory: typescript
-        run: |
-          npm version ${{ inputs.version }} --no-git-tag-version
-
-      - name: Commit version changes and create tag
+      - name: Run semantic-release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git add python/pyproject.toml typescript/package.json typescript/package-lock.json
-          git commit -m "chore: release v${{ inputs.version }}"
-          git tag -a "v${{ inputs.version }}" -m "Release v${{ inputs.version }}"
-          git push origin main --tags
-
-      - name: Install Python dependencies and build
-        working-directory: python
-        run: |
-          uv pip install --system build
-          python -m build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
 
       - name: Build TypeScript package
         working-directory: typescript
         run: |
-          npm ci
-          npm run build
+          cp ../LICENSE ../NOTICE .
+          npm pack
+          rm -f LICENSE NOTICE
 
-      - name: Prepare release artifacts
+      - name: Attest npm tarball
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: typescript/*.tgz
+
+      - name: Publish TypeScript package to npm (OIDC)
+        working-directory: typescript
         run: |
-          mkdir -p release-assets
-          cp python/dist/* release-assets/
+          set -euo pipefail
+          TARBALL="$(ls -1 *.tgz | head -n 1)"
+          echo "Publishing $TARBALL"
+          npm publish "file:./$TARBALL" --provenance --access public
 
-          echo "📦 Release artifacts:"
-          ls -la release-assets/
-
-      - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "🚀 Creating GitHub release..."
-          VERSION="${{ inputs.version }}"
-
-          # Try to extract changelog for this version
-          CHANGELOG_CONTENT="$(sed -n '/^## v'$VERSION'/,/^## /p' CHANGELOG.md 2>/dev/null | sed '$d')"
-
-          if [ -z "$CHANGELOG_CONTENT" ]; then
-            CHANGELOG_CONTENT="Release v$VERSION"
-          fi
-
-          gh release create "v$VERSION" \
-            --title "v$VERSION" \
-            --notes "$CHANGELOG_CONTENT" \
-            release-assets/*
-
-      - name: Publish Python package to PyPI
-        id: pypi_publish
-        continue-on-error: true  # TODO: Remove after Trusted Publisher is configured on PyPI
+      - name: Publish Python package to PyPI (OIDC)
+        if: hashFiles('python/dist/*.whl') != ''
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: python/dist/
-          attestations: false
-
-      - name: Publish TypeScript package to NPM
-        id: npm_publish
-        working-directory: typescript
-        run: npm publish --access public --provenance
-
-      - name: Release Summary
-        run: |
-          echo "🎉 RELEASE COMPLETED"
-          echo "Released version: ${{ inputs.version }}"
-          echo ""
-          if [ "${{ steps.pypi_publish.outcome }}" == "success" ]; then
-            echo "Published to PyPI: ✓"
-          else
-            echo "Published to PyPI: ⚠️  SKIPPED (Trusted Publisher not configured yet)"
-          fi
-          echo "Published to NPM: ✓"
-          echo "GitHub release created: ✓"
