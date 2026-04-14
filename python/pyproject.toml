@@ -5,6 +5,7 @@ description = "RFC 9457 Problem Details models for Jentic APIs"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
+license-files = ["LICENSE", "NOTICE"]
 authors = [
     {name = "Jentic", email = "hello@jentic.com"}
 ]
@@ -46,6 +47,11 @@ Issues = "https://github.com/jentic/api-problem-details/issues"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build]
+exclude = [
+    "tests/",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/jentic"]

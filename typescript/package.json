@@ -5,6 +5,11 @@
   "license": "Apache-2.0",
   "author": "Jentic <hello@jentic.com>",
   "homepage": "https://github.com/jentic/api-problem-details#readme",
+    "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org",
+    "provenance": true
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/jentic/api-problem-details.git",
@@ -32,7 +37,9 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "NOTICE"
   ],
   "scripts": {
     "build": "tsc",

@@ -1,0 +1,47 @@
+{
+  "branches": ["main"],
+  "tagFormat": "v${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "cp LICENSE NOTICE python/ && cd python && sed -i 's/^version = .*/version = \"${nextRelease.version}\"/' pyproject.toml && pip install build && python -m build && rm -f LICENSE NOTICE"
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "npmPublish": false,
+        "pkgRoot": "typescript"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": "python/dist/*.tar.gz",
+            "label": "Python sdist"
+          },
+          {
+            "path": "python/dist/*.whl",
+            "label": "Python wheel"
+          }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "python/pyproject.toml",
+          "typescript/package.json",
+          "typescript/package-lock.json"
+        ],
+        "message": "chore(release): cut the v${nextRelease.version} release [ci skip]"
+      }
+    ]
+  ]
+}
