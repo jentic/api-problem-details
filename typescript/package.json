@@ -1,6 +1,6 @@
 {
   "name": "@jentic/problem-details",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "RFC 9457 Problem Details types for Jentic APIs",
   "license": "Apache-2.0",
   "author": "Jentic <hello@jentic.com>",
